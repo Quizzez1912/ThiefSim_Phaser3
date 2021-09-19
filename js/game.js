@@ -5,8 +5,8 @@ var gameSettings = {
 
 var config = {
     type: Phaser.AUTO,
-    width: 1500,
-    height: 750,
+    width: 960,
+    height: 480,
     backgroundColor: 0x000000,
     scene: [Scene1, Scene2, SceneWin, SceneLose],
     pixelArt: true,
