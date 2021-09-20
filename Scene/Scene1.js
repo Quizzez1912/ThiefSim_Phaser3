@@ -7,7 +7,11 @@ class Scene1 extends Phaser.Scene {
     this.load.image("bg","assets/testbg.png");
     this.load.image("player","assets/player.png"); 
     this.load.image("gem","assets/gem.png");
-  }
+    this.load.plugin('rexcircularprogresscanvasplugin',
+     'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexcircularprogresscanvasplugin.min.js'
+     , true);  
+    }
+  
 
   create() { 
     this.background = this.add.image(0, 0, "bg");
@@ -18,6 +22,7 @@ class Scene1 extends Phaser.Scene {
     this.text = this.add.text(20,30);
     this.timer = false;
     this.timertime = 0;
+    
 
     this.cursorKeys = this.input.keyboard.createCursorKeys();
     this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -36,7 +41,8 @@ class Scene1 extends Phaser.Scene {
     //! Collider
 
     this.physics.add.overlap(this.player, this.gem, this.playerHitGem, null, this);
-  
+   
+    
   }
     
 
@@ -48,19 +54,16 @@ class Scene1 extends Phaser.Scene {
     if(this.timer){
       this.timertime++;
       console.log("timer läuft");
-      
-      this.text.setText("Die Zeit : " + (this.timertime/60).toFixed(2));
+
       if(this.timertime/60 > 3){
         this.timer = false;
         this.timertime = 0;
         this.text.setText();
-       
+        this.circularProgress.destroy();
       }
     }
     }
     
-   
-  
 
  //* Playermovement
  movePlayerManager() {
@@ -73,9 +76,11 @@ class Scene1 extends Phaser.Scene {
       
     } else if (Phaser.Input.Keyboard.JustDown(this.up) && this.player.y > 0) {
       this.player.setY(this.player.y -64 );
+     
        
     }else if (Phaser.Input.Keyboard.JustDown(this.down) && this.player.y < 384) {
       this.player.setY(this.player.y  + 64 );
+      
     } 
 
       // Jump
@@ -99,13 +104,48 @@ class Scene1 extends Phaser.Scene {
  }
 
 playerHitGem(player, gem){
+  if(!this.timer){ this.createCircularProgress();};
   this.timer = true;
-  setTimeout(function() { gem.destroy(); },3000)
+  setTimeout(function() { gem.destroy();},2990)
+  
+}
+  
+delteCircularProgress() {
+  
+}
+
+
+ createCircularProgress( )
+ {
+   // Canvas mit % Anzahl und Ohne Canvas ist der Kreis ohne Mittelteil
+  this.circularProgress = this.add.rexCircularProgressCanvas({
+    x: this.player.x + 32  , y: this.player.y + 32,
+    radius: 50,
+
+    //! 0x und dann hexacolor
+    trackColor: 0x7b5e57,
+    barColor: 0x00800b,
+    //centerColor: 0xd4d4d4,
+    // anticlockwise: true,
+     textColor: 0x000000,
+    textStrokeColor: 'white',
+    textStrokeThickness: 1,
+    textSize: '35px',
+    textStyle: 'bold',
+    textFormatCallback: function (value) {
+        return Math.floor(value * 100).toString() + "%";
+    },
+
+    value: 0
+})
+
+this.tweens.add({
+    targets: this.circularProgress,
+    value: 1,
+    duration: 3000,
+    ease: 'linear',
+})
+
  }
-
- collectGem(gem){
-
- }
-
 
 }
